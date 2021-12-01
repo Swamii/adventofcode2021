@@ -1,11 +1,9 @@
 const FILLED_WINDOW_LEN: usize = 3;
 
-pub fn run() {
-    let contents = crate::utils::read_input("day1.txt");
-    let mut previous_value: Option<i32> = None;
+fn first_pass(lines: &Vec<i32>) -> i32 {
     let mut increases = 0;
-    for line in contents.split("\n") {
-        let number = line.parse::<i32>().unwrap();
+    let mut previous_value: Option<i32> = None;
+    for &number in lines {
         if let Some(prev) = previous_value {
             if number > prev {
                 increases += 1;
@@ -13,34 +11,48 @@ pub fn run() {
         }
         previous_value = Some(number);
     }
-    println!("Number of increases: {}", increases);
-    increases = 0;
-    let mut sliding_windows: Vec<Vec<i32>> = Vec::new();
+    return increases;
+}
 
-    for line in contents.split("\n") {
-        let number = line.parse::<i32>().unwrap();
-        let previous_filled_window = sliding_windows.iter().rev().find(|x| x.len() == 3);
+fn second_pass(lines: &Vec<i32>) -> i32 {
+    let mut sliding_windows: Vec<Vec<i32>> = Vec::new();
+    let mut increases = 0;
+
+    for &number in lines {
+        let previous_filled_window = sliding_windows
+            .iter()
+            .rev()
+            .find(|x| x.len() == FILLED_WINDOW_LEN);
         let previous_filled_sum = match previous_filled_window {
             Some(prev) => Some(prev.iter().sum::<i32>()),
             None => None,
         };
-        for window in sliding_windows.iter_mut() {
-            let current_len = window.len();
-            if current_len >= FILLED_WINDOW_LEN {
-                continue;
-            }
-            if current_len == FILLED_WINDOW_LEN - 1 {
-                // We will fill this window
-                let newly_filled_sum = number + window.iter().sum::<i32>();
-                if let Some(previous_sum) = previous_filled_sum {
-                    if newly_filled_sum > previous_sum {
+        for window in sliding_windows
+            .iter_mut()
+            .filter(|window| window.len() < FILLED_WINDOW_LEN)
+            .collect::<Vec<&mut Vec<i32>>>()
+        {
+            window.push(number);
+            if let Some(previous_sum) = previous_filled_sum {
+                if window.len() == FILLED_WINDOW_LEN && window.iter().sum::<i32>() > previous_sum {
                     increases += 1;
                 }
             }
-            }
-            window.push(number);
         }
         sliding_windows.push(vec![number]);
     }
-    println!("Number of increased windows: {}", increases);
+    return increases;
+}
+
+pub fn run() {
+    let contents = crate::utils::read_input("day1.txt");
+    let lines: &Vec<i32> = &contents
+        .split("\n")
+        .map(|line| line.parse::<i32>().unwrap())
+        .collect();
+
+    let first_pass_result = first_pass(lines);
+    println!("Number of increases: {}", first_pass_result);
+    let second_pass_result = second_pass(lines);
+    println!("Number of increased windows: {}", second_pass_result);
 }
