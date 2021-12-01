@@ -1,3 +1,5 @@
+const FILLED_WINDOW_LEN: usize = 3;
+
 pub fn run() {
     let contents = crate::utils::read_input("day1.txt");
     let mut previous_value: Option<i32> = None;
@@ -24,17 +26,17 @@ pub fn run() {
         };
         for window in sliding_windows.iter_mut() {
             let current_len = window.len();
-            if current_len >= 3 {
+            if current_len >= FILLED_WINDOW_LEN {
                 continue;
             }
-            if current_len == 2 {
+            if current_len == FILLED_WINDOW_LEN - 1 {
                 // We will fill this window
                 let newly_filled_sum = number + window.iter().sum::<i32>();
                 if let Some(previous_sum) = previous_filled_sum {
                     if newly_filled_sum > previous_sum {
-                        increases += 1;
-                    }
+                    increases += 1;
                 }
+            }
             }
             window.push(number);
         }
