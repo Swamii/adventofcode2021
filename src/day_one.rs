@@ -17,7 +17,7 @@ pub fn run() {
 
     for line in contents.split("\n") {
         let number = line.parse::<i32>().unwrap();
-        let previous_filled_window = sliding_windows.iter().clone().rev().find(|x| x.len() == 3);
+        let previous_filled_window = sliding_windows.iter().rev().find(|x| x.len() == 3);
         let previous_filled_sum = match previous_filled_window {
             Some(prev) => Some(prev.iter().sum::<i32>()),
             None => None,
