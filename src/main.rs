@@ -1,5 +1,6 @@
 use std::env;
 mod day_one;
+mod day_two;
 mod utils;
 
 fn main() {
@@ -9,8 +10,9 @@ fn main() {
         .parse::<i32>()
         .expect("Day number needs to be an integer");
 
-    if *day == 1 {
-        println!("Running first day");
-        day_one::run();
+    match day {
+        1 => day_one::run(),
+        2 => day_two::run(),
+        _ => println!("Day {} not implemented", day),
     }
 }
