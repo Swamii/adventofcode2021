@@ -29,9 +29,9 @@ fn first_pass(lines: &Vec<&str>) -> (String, String) {
     return (least_common, most_common);
 }
 
-fn second_pass(lines: &Vec<&str>, go_low: bool) -> Option<String> {
+fn second_pass(lines: &Vec<&str>, prefer_low: bool) -> Option<String> {
     let mut rated_lines = lines.to_vec();
-    let prefered_on_stalemate = if go_low { &'0' } else { &'1' };
+    let preferred_on_stalemate = if prefer_low { &'0' } else { &'1' };
 
     for index in 0..LINE_LEN {
         let remaining_counters = count(&rated_lines);
@@ -45,23 +45,20 @@ fn second_pass(lines: &Vec<&str>, go_low: bool) -> Option<String> {
             .unwrap();
 
         let char_to_find = if most_common_occurence == least_common_occurence {
-            prefered_on_stalemate
-        } else if go_low {
+            preferred_on_stalemate
+        } else if prefer_low {
             least_common
         } else {
             most_common
         };
 
-        if rated_lines.len() > 1 {
-            let new_low_lines: Vec<&str> = rated_lines
-                .iter()
-                .filter(|line| line.chars().nth(index) == Some(*char_to_find))
-                .map(|line| *line)
-                .collect();
-            rated_lines.retain(|line| new_low_lines.contains(line));
-            if rated_lines.len() == 1 {
-                return Some(rated_lines[0].to_string());
-            }
+        rated_lines = rated_lines
+            .iter()
+            .filter(|line| line.chars().nth(index) == Some(*char_to_find))
+            .map(|line| *line)
+            .collect();
+        if rated_lines.len() == 1 {
+            return Some(rated_lines[0].to_string());
         }
     }
     return None;
@@ -75,7 +72,7 @@ pub fn run() {
     let gamma_rate = isize::from_str_radix(&most_common, 2).unwrap();
     let epsilon_rate = isize::from_str_radix(&least_common, 2).unwrap();
     println!(
-        "Consumption {} * {} = {}",
+        "Part1: Consumption {} * {} = {}",
         gamma_rate,
         epsilon_rate,
         gamma_rate * epsilon_rate
@@ -86,9 +83,7 @@ pub fn run() {
     let oxygen_rate = isize::from_str_radix(&high, 2).unwrap();
     let scrubber_rate = isize::from_str_radix(&low, 2).unwrap();
     println!(
-        "High = {}, Low = {}. Oxygen rating = {}. Scrubber rating = {}. Life support rating = {}",
-        high,
-        low,
+        "Part2: Life support rating {} * {} = {}",
         oxygen_rate,
         scrubber_rate,
         oxygen_rate * scrubber_rate
