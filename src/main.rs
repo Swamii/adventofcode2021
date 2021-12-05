@@ -1,4 +1,5 @@
 use std::env;
+mod day_five;
 mod day_four;
 mod day_one;
 mod day_three;
@@ -17,6 +18,7 @@ fn main() {
         2 => day_two::run(),
         3 => day_three::run(),
         4 => day_four::run(),
+        5 => day_five::run(),
         _ => println!("Day {} not implemented", day),
     }
 }
