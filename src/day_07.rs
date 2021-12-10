@@ -25,7 +25,7 @@ fn second_pass(positions: &Vec<usize>) -> usize {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day7.txt");
+    let contents = crate::utils::read_input("day07.txt");
     let positions: &Vec<usize> = &contents
         .split(",")
         .map(|pos| pos.parse::<usize>().unwrap())

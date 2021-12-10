@@ -104,7 +104,7 @@ fn check_board(boards: &Vec<BingoBoard>, numbers: &Vec<u8>) -> Vec<WinningBoard>
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day4.txt");
+    let contents = crate::utils::read_input("day04.txt");
     let mut blocks: VecDeque<&str> = contents.split("\n\n").collect();
     let numbers: Vec<u8> = blocks
         .pop_front()

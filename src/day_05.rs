@@ -97,7 +97,7 @@ fn second_pass(raw_lines: &Vec<Line>) -> u32 {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day5.txt");
+    let contents = crate::utils::read_input("day05.txt");
     let raw_lines: Vec<Line> = contents.split("\n").map(|line| Line::from(line)).collect();
 
     let count_overlapping_first = first_pass(&raw_lines);

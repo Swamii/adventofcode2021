@@ -78,7 +78,7 @@ fn second_pass(entries: &Vec<(Vec<String>, Vec<String>)>) -> usize {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day8.txt");
+    let contents = crate::utils::read_input("day08.txt");
     let entries: &Vec<(Vec<String>, Vec<String>)> = &contents
         .split("\n")
         .map(|line| {

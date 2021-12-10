@@ -1,13 +1,13 @@
 use std::env;
-mod day_eight;
-mod day_five;
-mod day_four;
-mod day_nine;
-mod day_one;
-mod day_seven;
-mod day_six;
-mod day_three;
-mod day_two;
+mod day_01;
+mod day_02;
+mod day_03;
+mod day_04;
+mod day_05;
+mod day_06;
+mod day_07;
+mod day_08;
+mod day_09;
 mod utils;
 
 fn main() {
@@ -18,15 +18,15 @@ fn main() {
         .expect("Day number needs to be an integer");
 
     match day {
-        1 => day_one::run(),
-        2 => day_two::run(),
-        3 => day_three::run(),
-        4 => day_four::run(),
-        5 => day_five::run(),
-        6 => day_six::run(),
-        7 => day_seven::run(),
-        8 => day_eight::run(),
-        9 => day_nine::run(),
+        1 => day_01::run(),
+        2 => day_02::run(),
+        3 => day_03::run(),
+        4 => day_04::run(),
+        5 => day_05::run(),
+        6 => day_06::run(),
+        7 => day_07::run(),
+        8 => day_08::run(),
+        9 => day_09::run(),
         _ => println!("Day {} not implemented", day),
     }
 }

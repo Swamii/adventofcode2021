@@ -49,7 +49,7 @@ impl Instruction {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day2.txt");
+    let contents = crate::utils::read_input("day02.txt");
     let instructions: &Vec<Instruction> = &contents
         .split("\n")
         .map(|line| {

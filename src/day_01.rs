@@ -45,7 +45,7 @@ fn second_pass(lines: &Vec<i32>) -> i32 {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day1.txt");
+    let contents = crate::utils::read_input("day01.txt");
     let lines: &Vec<i32> = &contents
         .split("\n")
         .map(|line| line.parse::<i32>().unwrap())

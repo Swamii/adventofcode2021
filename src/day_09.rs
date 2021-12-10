@@ -114,7 +114,7 @@ fn second_pass(map: &Map) -> usize {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day9.txt");
+    let contents = crate::utils::read_input("day09.txt");
     let rows: Vec<Vec<u8>> = contents
         .split("\n")
         .map(|line| {

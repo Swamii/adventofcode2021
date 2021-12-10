@@ -15,7 +15,7 @@ fn simulate(initial_states: &VecDeque<u64>, number_of_days: usize) -> u64 {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day6.txt");
+    let contents = crate::utils::read_input("day06.txt");
     let mut timers = VecDeque::from([0, 0, 0, 0, 0, 0, 0, 0, 0]);
     for state in contents
         .split(",")

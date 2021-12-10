@@ -65,7 +65,7 @@ fn second_pass(lines: &Vec<&str>, prefer_low: bool) -> Option<String> {
 }
 
 pub fn run() {
-    let contents = crate::utils::read_input("day3.txt");
+    let contents = crate::utils::read_input("day03.txt");
     let lines: &Vec<&str> = &contents.split("\n").collect();
 
     let (least_common, most_common) = first_pass(&lines);
