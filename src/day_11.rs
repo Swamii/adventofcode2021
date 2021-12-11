@@ -40,56 +40,23 @@ impl Map {
 
     fn get_adjacent_coordinates(&self, coord: &Coordinate) -> Vec<Coordinate> {
         let mut adjacent: Vec<Coordinate> = Vec::new();
-        let max_y = self.get_row_len() - 1;
-        let max_x = self.get_column_len() - 1;
-        if coord.y > 0 {
-            adjacent.push(Coordinate {
-                y: coord.y - 1,
-                x: coord.x,
-            });
-            if coord.x > 0 {
+        let max_y = (self.get_row_len() - 1) as isize;
+        let max_x = (self.get_column_len() - 1) as isize;
+
+        for x in -1 as isize..2 {
+            for y in -1 as isize..2 {
+                let y_d = y + coord.y as isize;
+                let x_d = x + coord.x as isize;
+                if (y == 0 && x == 0) || x_d < 0 || y_d < 0 || x_d > max_x || y_d > max_y {
+                    continue;
+                }
                 adjacent.push(Coordinate {
-                    y: coord.y - 1,
-                    x: coord.x - 1,
-                });
-            }
-            if coord.x < max_x {
-                adjacent.push(Coordinate {
-                    y: coord.y - 1,
-                    x: coord.x + 1,
+                    x: x_d as usize,
+                    y: y_d as usize,
                 });
             }
         }
-        if coord.y < max_y {
-            adjacent.push(Coordinate {
-                y: coord.y + 1,
-                x: coord.x,
-            });
-            if coord.x > 0 {
-                adjacent.push(Coordinate {
-                    y: coord.y + 1,
-                    x: coord.x - 1,
-                });
-            }
-            if coord.x < max_x {
-                adjacent.push(Coordinate {
-                    y: coord.y + 1,
-                    x: coord.x + 1,
-                });
-            }
-        }
-        if coord.x > 0 {
-            adjacent.push(Coordinate {
-                y: coord.y,
-                x: coord.x - 1,
-            });
-        }
-        if coord.x < max_x {
-            adjacent.push(Coordinate {
-                y: coord.y,
-                x: coord.x + 1,
-            });
-        }
+
         return adjacent;
     }
 }
