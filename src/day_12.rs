@@ -1,101 +1,72 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, VecDeque};
+use std::time::Instant;
 
-const PATH_DELIMITER: &str = ",";
-
-struct Graph {
-    graph: HashMap<String, Vec<String>>,
-}
-
-impl Graph {
-    fn from(lines: &Vec<(&str, &str)>) -> Graph {
-        let mut graph: HashMap<String, Vec<String>> = HashMap::new();
-        for (start, end) in lines {
-            if *start != "end" && *end != "start" {
-                graph
-                    .entry(String::from(*start))
-                    .or_insert(Vec::new())
-                    .push(String::from(*end));
-            }
-            if *start != "start" && *end != "end" {
-                graph
-                    .entry(String::from(*end))
-                    .or_insert(Vec::new())
-                    .push(String::from(*start));
-            }
+fn make_graph(lines: &Vec<(&str, &str)>) -> HashMap<String, Vec<String>> {
+    let mut graph: HashMap<String, Vec<String>> = HashMap::new();
+    for (start, end) in lines {
+        if *start != "end" && *end != "start" {
+            graph
+                .entry(String::from(*start))
+                .or_insert(Vec::new())
+                .push(String::from(*end));
         }
-        return Graph { graph };
+        if *start != "start" && *end != "end" {
+            graph
+                .entry(String::from(*end))
+                .or_insert(Vec::new())
+                .push(String::from(*start));
+        }
     }
+    return graph;
 }
 
-fn first_pass(graph: &Graph) -> usize {
-    let mut todo: Vec<(String, String)> = vec![(String::from("start"), String::new())];
-    let mut done: Vec<String> = Vec::new();
+fn first_pass(graph: &HashMap<String, Vec<String>>) -> usize {
+    let mut todo: VecDeque<Vec<String>> = VecDeque::from([vec![String::from("start")]]);
+    let mut done: Vec<Vec<String>> = Vec::new();
 
     while !todo.is_empty() {
-        let (next, path) = todo.pop().unwrap();
-        let current_path = if path.is_empty() {
-            next.to_string()
-        } else {
-            path + PATH_DELIMITER + &next
-        };
-        if next == "end" {
-            done.push(current_path.to_string());
+        let path = todo.pop_front().unwrap();
+        let last = path.last().unwrap();
+        if *last == "end" {
+            done.push(path);
             continue;
         }
-        let neighbours = graph.graph.get(&next);
+        let neighbours = graph.get(&last.to_string());
 
         for neighbour in neighbours.unwrap_or(&Vec::new()) {
-            if *neighbour == neighbour.to_lowercase() && current_path.contains(neighbour) {
-                continue;
+            if *neighbour == neighbour.to_uppercase() || !path.contains(&neighbour) {
+                let mut new_path = path.to_vec();
+                new_path.push(neighbour.to_string());
+                todo.push_back(new_path);
             }
-            todo.push((neighbour.to_string(), current_path.to_string()));
         }
     }
     return done.len();
 }
 
-fn has_more_than_one_occurrence_of_cave(string: &str, cave: &str) -> bool {
-    if cave == cave.to_uppercase() || !string.contains(cave) {
-        return false;
-    }
-    let mut seen: HashSet<String> = HashSet::new();
-    for chars in string.split(PATH_DELIMITER) {
-        if chars == chars.to_lowercase() {
-            if seen.contains(chars) {
-                return true;
-            }
-            seen.insert(chars.to_string());
-        }
-    }
-    return false;
-}
-
-fn second_pass(graph: &Graph) -> usize {
-    let mut todo: Vec<(String, String)> = vec![(String::from("start"), String::new())];
-    let mut done: Vec<String> = Vec::new();
+fn second_pass(graph: &HashMap<String, Vec<String>>) -> usize {
+    let mut todo: VecDeque<(Vec<String>, bool)> =
+        VecDeque::from([(vec![String::from("start")], false)]);
+    let mut done: Vec<Vec<String>> = Vec::new();
 
     while !todo.is_empty() {
-        let (next, path) = todo.pop().unwrap();
-        let current_path = if path.is_empty() {
-            next.to_string()
-        } else {
-            path + PATH_DELIMITER + &next
-        };
-        if next == "end" {
-            done.push(current_path.to_string());
+        let (path, is_double_small) = todo.pop_front().unwrap();
+        let last = path.last().unwrap();
+        if *last == "end" {
+            done.push(path);
             continue;
         }
-        let neighbours = match graph.graph.get(&next) {
-            Some(n) => n,
-            None => continue,
-        };
-
-        for neighbour in neighbours {
-            if neighbour != "end" && has_more_than_one_occurrence_of_cave(&current_path, neighbour)
-            {
-                continue;
+        let neighbours = graph.get(&last.to_string());
+        for neighbour in neighbours.unwrap_or(&Vec::new()) {
+            if *neighbour == neighbour.to_uppercase() || !path.contains(neighbour) {
+                let mut new_path = path.to_vec();
+                new_path.push(neighbour.to_string());
+                todo.push_back((new_path, is_double_small));
+            } else if !is_double_small && path.iter().filter(|p| *p == neighbour).count() == 1 {
+                let mut new_path = path.to_vec();
+                new_path.push(neighbour.to_string());
+                todo.push_back((new_path, true));
             }
-            todo.push((neighbour.to_string(), current_path.to_string()));
         }
     }
     return done.len();
@@ -107,9 +78,11 @@ pub fn run() {
         .split("\n")
         .map(|line| line.trim().split_once("-").unwrap())
         .collect();
-    let graph = Graph::from(&lines);
-    println!("Part1 {}", first_pass(&graph));
-    println!("Part2 {}", second_pass(&graph));
+    let start = Instant::now();
+    let graph = make_graph(&lines);
+    println!("Graph setup {:?}", start.elapsed());
+    println!("Part1 {} ({:?})", first_pass(&graph), start.elapsed());
+    println!("Part2 {} ({:?})", second_pass(&graph), start.elapsed());
 }
 
 #[cfg(test)]
@@ -139,13 +112,13 @@ mod tests {
     const EXPECTED: usize = 226;
     const EXPECTED_PART2: usize = 3509;
 
-    fn create_graph() -> Graph {
+    fn create_graph() -> HashMap<String, Vec<String>> {
         let lines: Vec<(&str, &str)> = INPUT
             .split("\n")
             .filter(|l| !l.trim().is_empty())
             .map(|line| line.trim().split_once("-").unwrap())
             .collect();
-        return Graph::from(&lines);
+        return make_graph(&lines);
     }
 
     #[test]
