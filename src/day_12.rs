@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 const PATH_DELIMITER: &str = ",";
 
@@ -10,7 +10,7 @@ impl Graph {
     fn from(lines: &Vec<(&str, &str)>) -> Graph {
         let mut graph: HashMap<String, Vec<String>> = HashMap::new();
         for (start, end) in lines {
-            if *start != "end" {
+            if *start != "end" && *end != "start" {
                 graph
                     .entry(String::from(*start))
                     .or_insert(Vec::new())
@@ -54,14 +54,20 @@ fn first_pass(graph: &Graph) -> usize {
     return done.len();
 }
 
-fn has_more_than_one_ocurrence_of_cave(string: &str, cave: &str) -> bool {
-    let mut ocurrences: HashMap<String, usize> = HashMap::new();
+fn has_more_than_one_occurrence_of_cave(string: &str, cave: &str) -> bool {
+    if cave == cave.to_uppercase() || !string.contains(cave) {
+        return false;
+    }
+    let mut seen: HashSet<String> = HashSet::new();
     for chars in string.split(PATH_DELIMITER) {
         if chars == chars.to_lowercase() {
-            *ocurrences.entry(chars.to_string()).or_insert(0) += 1;
+            if seen.contains(chars) {
+                return true;
+            }
+            seen.insert(chars.to_string());
         }
     }
-    return ocurrences.iter().any(|(_, count)| *count > 1) && ocurrences.contains_key(cave);
+    return false;
 }
 
 fn second_pass(graph: &Graph) -> usize {
@@ -85,10 +91,7 @@ fn second_pass(graph: &Graph) -> usize {
         };
 
         for neighbour in neighbours {
-            if *neighbour == "start"
-                || (*neighbour == neighbour.to_lowercase()
-                    && neighbour != "end"
-                    && has_more_than_one_ocurrence_of_cave(&current_path, neighbour))
+            if neighbour != "end" && has_more_than_one_occurrence_of_cave(&current_path, neighbour)
             {
                 continue;
             }
